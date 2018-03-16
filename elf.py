@@ -38,8 +38,8 @@
 # Connected App information: fill it in by creating a connected app
 # https://help.salesforce.com/articleView?id=connected_app_create.htm&language=en_US&type=0
 
-CLIENT_ID = 'FILL_ME_IN'
-CLIENT_SECRET = 'FILL_ME_IN'
+CLIENT_ID = 'client_id'
+CLIENT_SECRET = 'client_secret'
 
 #Imports
 
@@ -64,8 +64,8 @@ def login():
     # check to see if anything was entered and if not, default values
     # change default values for username and password to your own
     if len(username) < 1:
-        username = 'user@company.com'
-        password = 'Passw0rd'
+        username = 'a@b.c'
+        password = 'password'
         print 'Using default username: ' + username
     else:
         print 'Using user inputed username: ' + username
@@ -94,11 +94,13 @@ def login():
 
     # call salesforce REST API and pass in OAuth credentials
     req = urllib2.Request(url, data, headers)
+    print req
     res = urllib2.urlopen(req)
 
     # load results to dictionary
     res_dict = json.load(res)
-
+    print res_dict
+    
     # close connection
     res.close()
 
@@ -124,10 +126,13 @@ def download_elf():
         print 'Using user inputed date range: ' + day + '\n'
 
     # query Ids from Event Log File
-    url = instance_url+'/services/data/v33.0/query?q=SELECT+Id+,+EventType+,+Logdate+From+EventLogFile+Where+LogDate+=+'+day
+    url = instance_url+'/services/data/v42.0/query?q=SELECT+Id+,+EventType+,+Logdate+From+EventLogFile+Where+LogDate+=+'+day
+    print url
     headers = {'Authorization' : 'Bearer ' + access_token, 'X-PrettyPrint' : '1'}
+    print headers
     req = urllib2.Request(url, None, headers)
     res = urllib2.urlopen(req)
+    print res
     res_dict = json.load(res)
 
     # capture record result size to loop over
@@ -174,7 +179,7 @@ def download_elf():
         dates = res_dict['records'][i]['LogDate']
 
         # create REST API request
-        url = instance_url+'/services/data/v33.0/sobjects/EventLogFile/'+ids+'/LogFile'
+        url = instance_url+'/services/data/v42.0/sobjects/EventLogFile/'+ids+'/LogFile'
 
         # provide correct compression header
         if (compress == 'y') or (compress == 'yes'):
